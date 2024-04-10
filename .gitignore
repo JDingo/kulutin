@@ -1,0 +1,9 @@
+__pycache__
+.venv
+.env
+fly.toml
+
+# Local Development
+*.code-workspace
+rest/
+docker-compose.yml
