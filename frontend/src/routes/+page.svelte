@@ -2,6 +2,7 @@
 	import { onMount } from "svelte";
 	import { GET } from "./transactions/+server";
 	import TransactionTable from "$lib/components/transactionTable.svelte";
+  import TopAppBar, { Section, Title } from '@smui/top-app-bar'
 
   /**
 	 * @type {any}
@@ -13,5 +14,9 @@
 
 </script>
 
-<h1>Kulutin</h1>
+<TopAppBar variant="static">
+  <Section>
+    <Title>Kulutin</Title>
+  </Section>
+</TopAppBar>
 <TransactionTable transactions={transactions}></TransactionTable>

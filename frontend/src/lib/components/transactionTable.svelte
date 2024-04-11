@@ -3,23 +3,27 @@
 	 * @type {any}
 	 */
   export let transactions = [];
+
+  import DataTable, { Head, Body, Row, Cell } from '@smui/data-table';
 </script>
 
-<table>
-  <thead>
-    <tr>
-      <th>Date</th>
-      <th>Merchant</th>
-      <th>Total</th>
-      <th>Category</th>
-    </tr>
-  </thead>
-  <tbody>
+<DataTable table$aria-label="transactions list">
+  <Head>
+    <Row>
+      <Cell>Date</Cell>
+      <Cell>Merchant</Cell>
+      <Cell>Total</Cell>
+      <Cell>Category</Cell>
+    </Row>
+  </Head>
+  <Body>
     {#each transactions as transaction}
-      <th>{transaction.date}</th>
-      <td>{transaction.merchant}</td>
-      <td>{transaction.total}</td>
-      <td>{transaction.category_id}</td>
+      <Row>
+        <Cell>{transaction.date}</Cell>
+        <Cell>{transaction.merchant}</Cell>
+        <Cell>{transaction.total}</Cell>
+        <Cell>{transaction.category_id}</Cell>
+      </Row>
     {/each}
-  </tbody>
-</table>
+  </Body>
+</DataTable>
