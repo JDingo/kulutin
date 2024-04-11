@@ -10,16 +10,27 @@
 	 * @type {any}
 	 */
 	let transactions = [];
-	onMount(async () => {
-		transactions = await GET_TRANSACTIONS();
-	});
-
 	/**
 	 * @type {any}
 	 */
 	let categories = [];
 	onMount(async () => {
+		transactions = await GET_TRANSACTIONS();
 		categories = await GET_CATEGORIES();
+
+		console.log(transactions);
+
+		transactions = transactions.map(
+			(/** @type {{ category_name: any; category_id: any; }} */ transaction) => {
+				transaction.category_name = categories.find(
+					(/** @type {{ id: any; }} */ category) => category.id == transaction.category_id
+				).category_name;
+
+				return transaction;
+			}
+		);
+
+		console.log(transactions);
 	});
 
 	let form_data = { date: '', merchant: '', total: '0.0', category_id: 0 };
