@@ -53,6 +53,20 @@ def create_transaction(
     return crud.create_transaction(db, transaction)
 
 
+@app.delete("/transactions/{id}", response_model=schemas.Transaction)
+def delete_transaction(
+    id: int, transaction: schemas.Transaction, db: Session = Depends(get_db)
+):
+    return crud.delete_transaction(db, transaction, id)
+
+
+@app.put("/transactions/{id}", response_model=schemas.Transaction)
+def update_transaction(
+    id: int, transaction: schemas.Transaction, db: Session = Depends(get_db)
+):
+    return crud.update_transaction(db, transaction, id)
+
+
 @app.get("/categories", response_model=list[schemas.Category])
 def read_categories(db: Session = Depends(get_db)):
     return crud.get_categories(db)

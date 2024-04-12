@@ -1,3 +1,5 @@
+from http.client import HTTPException
+from fastapi import status
 from sqlalchemy.orm import Session
 from . import models, schemas
 
@@ -35,6 +37,34 @@ def create_transaction(db: Session, transaction: schemas.TransactionCreate):
     )
 
     db.add(db_transaction)
+    db.commit()
+    db.refresh(db_transaction)
+    return db_transaction
+
+
+def delete_transaction(db: Session, transcation: schemas.Transaction, id):
+    db.query(models.Transaction).filter(models.Transaction.id == id).delete()
+    db.commit()
+    return transcation
+
+
+def update_transaction(db: Session, transaction: schemas.Transaction, id):
+    db_transaction_query = db.query(models.Transaction).filter(
+        models.Transaction.id == id
+    )
+    db_transaction = db_transaction_query.first()
+
+    if db_transaction is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Transaction with {id} not found",
+        )
+
+    db_transaction.merchant = transaction.merchant
+    db_transaction.date = transaction.date
+    db_transaction.total = transaction.total
+    db_transaction.category_id = transaction.category_id
+
     db.commit()
     db.refresh(db_transaction)
     return db_transaction
