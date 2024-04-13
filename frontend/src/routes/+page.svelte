@@ -1,47 +1,76 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
-	import { GET_CATEGORIES, GET_TRANSACTIONS, POST_TRANSACTION } from './api/+server';
+	import {
+		DELETE_TRANSACTION,
+		GET_CATEGORIES,
+		GET_TRANSACTIONS,
+		POST_TRANSACTION,
+		PUT_TRANSACTION
+	} from './api/+server';
 	import TransactionTable from '$lib/components/transactionTable.svelte';
 	import TopAppBar, { Section, Title } from '@smui/top-app-bar';
 	import Button, { Label, Icon } from '@smui/button';
 	import Textfield from '@smui/textfield';
 	import Select, { Option } from '@smui/select';
-	/**
-	 * @type {any}
-	 */
-	let transactions = [];
-	/**
-	 * @type {any}
-	 */
-	let categories = [];
+	import type { Transaction } from '$lib/types/Transaction';
+	import type { Category } from '$lib/types/Category';
+
+	let transactions: Transaction[] = [];
+	let categories: Category[] = [];
+
 	onMount(async () => {
 		transactions = await GET_TRANSACTIONS();
 		categories = await GET_CATEGORIES();
 
 		console.log(transactions);
 
-		transactions = transactions.map(
-			(/** @type {{ category_name: any; category_id: any; }} */ transaction) => {
-				transaction.category_name = categories.find(
-					(/** @type {{ id: any; }} */ category) => category.id == transaction.category_id
-				).category_name;
+		transactions = transactions.map((transaction) => {
+			const category_name = categories.find(
+				(category) => category.id == transaction.category_id
+			)?.category_name;
 
-				return transaction;
-			}
-		);
+			transaction.category_name = category_name ? category_name : 'Non-defined';
 
-		console.log(transactions);
+			return transaction;
+		});
+
+		transactions = transactions.sort((a, b) => a.id - b.id);
 	});
 
 	let form_data = { date: '', merchant: '', total: '0.0', category_id: 0 };
 
-	const handleSubmit = async (/** @type {{ preventDefault: () => void; }} */ e) => {
+	const handleSubmit = async (e: Event) => {
 		e.preventDefault();
 
 		const data = { ...form_data, total: parseFloat(form_data.total) };
 		const response = await POST_TRANSACTION(data);
 
 		transactions = [...transactions, response];
+	};
+
+	const handleEdit = async (e: CustomEvent<Transaction>) => {
+		const transaction = e.detail;
+		const response = await PUT_TRANSACTION(transaction);
+
+		let newTransactions = transactions.filter((transaction) => transaction.id != response.id);
+		response.category_name = categories.find(
+			(category) => category.id == response.category_id
+		)?.category_name;
+		response.total = parseFloat(response.total);
+		newTransactions = [...newTransactions, response];
+		newTransactions.sort((a, b) => a.id - b.id);
+
+		transactions = newTransactions;
+	};
+
+	const handleDelete = async (e: CustomEvent<Transaction>) => {
+		const transaction = e.detail;
+		const response = await DELETE_TRANSACTION(transaction);
+
+		let newTransactions = transactions.filter((transaction) => transaction.id != response.id);
+		newTransactions.sort((a, b) => a.id - b.id);
+
+		transactions = newTransactions;
 	};
 </script>
 
@@ -53,7 +82,12 @@
 			</Section>
 		</TopAppBar>
 		<div class="content">
-			<TransactionTable {transactions}></TransactionTable>
+			<TransactionTable
+				{transactions}
+				{categories}
+				on:edit={(transaction) => handleEdit(transaction)}
+				on:delete={(transaction) => handleDelete(transaction)}
+			></TransactionTable>
 			<div>
 				<form on:submit={handleSubmit}>
 					<Textfield bind:value={form_data.date} label="Date" required>

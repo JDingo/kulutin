@@ -5,6 +5,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
+		"start": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -17,6 +18,8 @@
 	"devDependencies": {
 		"@smui/button": "^7.0.0-beta.18",
 		"@smui/data-table": "^7.0.0-beta.18",
+		"@smui/list": "^7.0.0-beta.18",
+		"@smui/menu": "^7.0.0-beta.18",
 		"@smui/select": "^7.0.0-beta.18",
 		"@smui/textfield": "^7.0.0-beta.18",
 		"@smui/top-app-bar": "^7.0.0-beta.18",

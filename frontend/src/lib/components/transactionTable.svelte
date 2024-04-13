@@ -1,10 +1,12 @@
-<script>
-	/**
-	 * @type {any}
-	 */
-	export let transactions = [];
+<script lang="ts">
+	import type { Transaction } from '$lib/types/Transaction';
+	import type { Category } from '$lib/types/Category';
 
-	import DataTable, { Head, Body, Row, Cell } from '@smui/data-table';
+	export let transactions: Transaction[] = [];
+	export let categories: Category[] = [];
+
+	import DataTable, { Head, Body, Row, Cell, Label } from '@smui/data-table';
+	import TransactionTableItem from './transactionTableItem.svelte';
 </script>
 
 <DataTable table$aria-label="transactions list">
@@ -17,13 +19,8 @@
 		</Row>
 	</Head>
 	<Body>
-		{#each transactions as transaction}
-			<Row>
-				<Cell>{transaction.date}</Cell>
-				<Cell>{transaction.merchant}</Cell>
-				<Cell>{transaction.total}</Cell>
-				<Cell>{transaction.category_name}</Cell>
-			</Row>
+		{#each transactions as transaction (transaction.id)}
+			<TransactionTableItem {transaction} {categories} on:edit on:delete />
 		{/each}
 	</Body>
 </DataTable>
