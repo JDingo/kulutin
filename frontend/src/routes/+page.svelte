@@ -6,7 +6,7 @@
 		GET_TRANSACTIONS,
 		POST_TRANSACTION,
 		PUT_TRANSACTION
-	} from './api/+server';
+	} from '../api/server';
 	import TransactionTable from '$lib/components/transactionTable.svelte';
 	import TopAppBar, { Section, Title } from '@smui/top-app-bar';
 	import Button, { Label, Icon } from '@smui/button';
@@ -21,8 +21,6 @@
 	onMount(async () => {
 		transactions = await GET_TRANSACTIONS();
 		categories = await GET_CATEGORIES();
-
-		console.log(transactions);
 
 		transactions = transactions.map((transaction) => {
 			const category_name = categories.find(
@@ -44,6 +42,11 @@
 
 		const data = { ...form_data, total: parseFloat(form_data.total) };
 		const response = await POST_TRANSACTION(data);
+
+		response.category_name = categories.find(
+			(category) => category.id == response.category_id
+		)?.category_name;
+		response.total = parseFloat(response.total);
 
 		transactions = [...transactions, response];
 	};
